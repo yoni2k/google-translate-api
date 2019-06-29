@@ -46,12 +46,12 @@ def get_str_to_translate():
     return translate_lines[0].strip('\n')
 
 
-def send_request(req_token):
+def send_request(req_token, text_to_translate, format, source, target):
     querystring = {
-        "q":        toTranslate,
-        "format":   "text",
-        "source":   "en",
-        "target":   "he"
+        "q":        text_to_translate,
+        "format":   format,
+        "source":   source,
+        "target":   target
         }
 
     headers = {
@@ -66,18 +66,22 @@ def send_request(req_token):
         exit(1)
 
 
-def print_response(resp_json):
+def get_translation(resp_json):
     if resp_json.get('data'):
-        print(f'\"{toTranslate}\" translates to \"' + resp_json['data']['translations'][0]['translatedText'] + '\"')
+        return '\"' + resp_json['data']['translations'][0]['translatedText'] + '\"'
     elif resp_json.get('error'):
-        print(resp_json)
+        return "ERROR: " + resp_json['error']
     else:
-        print('ERROR: unknown parsing error of the response')
+        return 'ERROR: unknown parsing error of the response: ' + resp_json
 
 
-token = get_token()
-toTranslate = get_str_to_translate()
-toTranslate = input('Enter word to translate from English to Hebrew: ')
-response = send_request(token)
-print_response(response.json())
+def main():
+    token = get_token()
+    to_translate = get_str_to_translate()
+    # to_translate = input('Enter word to translate from English to Hebrew: ')
+    response = send_request(token, to_translate, "text", "en", "he")
+    translation = get_translation(response.json())
+    print("Translating \"" + to_translate + "\": " + translation)
 
+
+main()
