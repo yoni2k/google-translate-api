@@ -1,3 +1,7 @@
+# File with key I don't want to commit
+token.txt
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
