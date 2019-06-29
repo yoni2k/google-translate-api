@@ -15,6 +15,7 @@ import requests
 
 url = "https://translation.googleapis.com/language/translate/v2"
 
+
 def get_token():
     """ Returns token to be used when connection to Google API """
     try:
