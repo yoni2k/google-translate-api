@@ -30,7 +30,7 @@ class GoogleTranslate:
 
         source_types = ("file", "user_input")
 
-    def get_token(self):
+    def _get_token(self):
         """ Returns token to be used when connection to Google API """
         with open(self.settings[self.SettingNames.name_token_file_path], "r") as tokenFile:
             file_lines = tokenFile.readlines()
@@ -39,7 +39,7 @@ class GoogleTranslate:
             raise ValueError('There are more than 1 lines in token file')
         return file_lines[0].strip('\n')
 
-    def get_str_to_translate(self):
+    def _get_str_to_translate(self):
         """ Returns string that should be translated """
         # TODO do I need this function at all? Like this?
         if self.settings[self.SettingNames.name_translate_string_source] == "user_input":
@@ -49,7 +49,7 @@ class GoogleTranslate:
         else:
             raise ValueError("Invalid source type: " + self.SettingNames.name_translate_string_source)
 
-    def send_request(self, text_to_translate, format_type, source, target):
+    def _send_request(self, text_to_translate, format_type, source, target):
         # TODO write explanation
         querystring = {"q":        text_to_translate,
                        "format":   format_type,
@@ -62,7 +62,7 @@ class GoogleTranslate:
         return requests.request("GET", self.translate_url, headers=headers, params=querystring)
 
     @staticmethod
-    def parse_translate_response(resp_json):
+    def _parse_translate_response(resp_json):
         # TODO write explanation
         if resp_json.get('data'):
             return resp_json['data']['translations'][0]['translatedText']
@@ -73,8 +73,11 @@ class GoogleTranslate:
 
     def translate(self, text_to_translate, format_type, source, target):
         # TODO write explanation
-        response = self.send_request(text_to_translate, format_type, source, target)
-        return self.parse_translate_response(response.json())
+        if not text_to_translate:
+            text_to_translate = self._get_str_to_translate()
+        self.last_translated = text_to_translate # for printing / debugging
+        response = self._send_request(text_to_translate, format_type, source, target)
+        return self._parse_translate_response(response.json())
 
     def check_all_settings_exist(self):
         for setting_name in self.SettingNames.mand_settings_list:
@@ -91,18 +94,14 @@ class GoogleTranslate:
         with open(settings_file_path, "r") as settings_file:
             self.settings = json.load(settings_file)
         self.check_all_settings_exist()
-        self.token = self.get_token()
+        self.token = self._get_token()
 
 
 def main():
     try:
         tranl_object = GoogleTranslate("../resources/settings.json")
-
-        # TODO is this how we want to get it?
-        text_to_translate = tranl_object.get_str_to_translate()
-
-        translation = tranl_object.translate(text_to_translate, "text", "en", "he")
-        print("Translating \"" + text_to_translate + "\": \"" + translation + "\"")
+        translation = tranl_object.translate(None, "text", "en", "he")
+        print("Translation: \"" + tranl_object.last_translated + "\": \"" + translation + "\"")
     except Exception as e:
         print(traceback.print_exc())
 
