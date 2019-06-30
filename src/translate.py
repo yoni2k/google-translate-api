@@ -19,7 +19,7 @@ url = "https://translation.googleapis.com/language/translate/v2"
 def get_token():
     """ Returns token to be used when connection to Google API """
     try:
-        with open('./token.txt', "r") as tokenFile:
+        with open('../token.txt', "r") as tokenFile:
             file_lines = tokenFile.readlines()
     except Exception as e:
         print("ERROR: Unable to read from token file: " + str(e))
@@ -34,7 +34,7 @@ def get_token():
 def get_str_to_translate():
     """ Returns string that should be translated """
     try:
-        with open('./to-translate.txt', "r") as translateFile:
+        with open('../to-translate.txt', "r") as translateFile:
             translate_lines = translateFile.readlines()
     except Exception as e:
         print("ERROR: Unable to read from file with string to translate: " + str(e))
@@ -46,10 +46,10 @@ def get_str_to_translate():
     return translate_lines[0].strip('\n')
 
 
-def send_request(req_token, text_to_translate, format, source, target):
+def send_request(req_token, text_to_translate, format_type, source, target):
     querystring = {
         "q":        text_to_translate,
-        "format":   format,
+        "format":   format_type,
         "source":   source,
         "target":   target
         }
@@ -68,20 +68,23 @@ def send_request(req_token, text_to_translate, format, source, target):
 
 def get_translation(resp_json):
     if resp_json.get('data'):
-        return '\"' + resp_json['data']['translations'][0]['translatedText'] + '\"'
+        return resp_json['data']['translations'][0]['translatedText']
     elif resp_json.get('error'):
         return "ERROR: " + resp_json['error']
     else:
         return 'ERROR: unknown parsing error of the response: ' + resp_json
 
 
-def main():
+def translate(text_to_translate, format_type, source, target):
     token = get_token()
-    to_translate = get_str_to_translate()
-    # to_translate = input('Enter word to translate from English to Hebrew: ')
-    response = send_request(token, to_translate, "text", "en", "he")
-    translation = get_translation(response.json())
-    print("Translating \"" + to_translate + "\": " + translation)
+    response = send_request(token, text_to_translate, format_type, source, target)
+    return get_translation(response.json())
 
+
+def main():
+    text_to_translate = get_str_to_translate()
+    # to_translate = input('Enter word to translate from English to Hebrew: ')
+    translation = translate(text_to_translate, "text", "en", "he")
+    print("Translating \"" + text_to_translate + "\": \"" + translation + "\"")
 
 main()
