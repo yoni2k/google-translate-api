@@ -1,0 +1,5 @@
+{
+  "token_file_path": "../resources/token.txt",
+  "translate_string_source": "file",
+  "string_to_translate_source_file": "Hello World"
+}
