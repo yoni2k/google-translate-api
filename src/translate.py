@@ -13,6 +13,7 @@ TODOs:
 
 import requests
 import json
+import traceback
 
 
 class GoogleTranslate:
@@ -29,16 +30,10 @@ class GoogleTranslate:
 
         source_types = ("file", "user_input")
 
-
     def get_token(self):
         """ Returns token to be used when connection to Google API """
-        try:
-            with open(self.settings[self.SettingNames.name_token_file_path], "r") as tokenFile:
-                file_lines = tokenFile.readlines()
-        except Exception:
-            # TODO change to specific exception, gathering exception infos
-            print("ERROR: Unable to read from token file: ")
-            raise
+        with open(self.settings[self.SettingNames.name_token_file_path], "r") as tokenFile:
+            file_lines = tokenFile.readlines()
 
         if len(file_lines) > 1:
             raise ValueError('There are more than 1 lines in token file')
@@ -52,8 +47,7 @@ class GoogleTranslate:
         elif self.settings[self.SettingNames.name_translate_string_source] == "file":
             return self.settings[self.SettingNames.name_string_to_translate_source_file]
         else:
-            raise Exception("Invalid source type: " + self.SettingNames.name_translate_string_source)
-        # TODO raise specific exception
+            raise ValueError("Invalid source type: " + self.SettingNames.name_translate_string_source)
 
     def send_request(self, text_to_translate, format_type, source, target):
         # TODO write explanation
@@ -65,12 +59,7 @@ class GoogleTranslate:
         headers = {'Authorization':    f'Bearer {self.token}',
                    'Host':             "translation.googleapis.com"}
 
-        try:
-            return requests.request("GET", self.translate_url, headers=headers, params=querystring)
-        except Exception:
-            print("ERROR: Got exception when sending data to Google:\n")
-            # TODO change to specific exception, gathering exception infos
-            raise
+        return requests.request("GET", self.translate_url, headers=headers, params=querystring)
 
     @staticmethod
     def parse_translate_response(resp_json):
@@ -78,9 +67,9 @@ class GoogleTranslate:
         if resp_json.get('data'):
             return resp_json['data']['translations'][0]['translatedText']
         elif resp_json.get('error'):
-            return "ERROR: " + str(resp_json['error'])
+            raise ValueError("ERROR: " + resp_json['error'])
         else:
-            return 'ERROR: unknown parsing error of the response: ' + resp_json
+            raise ValueError('ERROR: unknown parsing error of the response: ' + resp_json)
 
     def translate(self, text_to_translate, format_type, source, target):
         # TODO write explanation
@@ -88,20 +77,14 @@ class GoogleTranslate:
         return self.parse_translate_response(response.json())
 
     def check_all_settings_exist(self):
-        try:
-            for setting_name in self.SettingNames.mand_settings_list:
-                self.settings[setting_name]
+        for setting_name in self.SettingNames.mand_settings_list:
+            self.settings[setting_name]
 
-            if not self.settings[self.SettingNames.name_translate_string_source] in self.SettingNames.source_types:
-                # TODO change to proper Exception type
-                raise Exception("Invalid source type: " + self.SettingNames.string_to_translate_source_type)
+        if not self.settings[self.SettingNames.name_translate_string_source] in self.SettingNames.source_types:
+            raise ValueError("Invalid source type: " + self.SettingNames.string_to_translate_source_type)
 
-            if (str(self.settings[self.SettingNames.name_translate_string_source])) == "file":
-                self.settings[self.SettingNames.name_string_to_translate_source_file]
-        except Exception as e:
-            # TODO change type of Exception to specific type
-            # TODO make sure that 2nd string really adds additional string
-            raise Exception("Missing one of mandatory settings values: " + str(e))
+        if (str(self.settings[self.SettingNames.name_translate_string_source])) == "file":
+            self.settings[self.SettingNames.name_string_to_translate_source_file]
 
     def __init__(self, settings_file_path):
         # TODO write explanation
@@ -121,7 +104,7 @@ def main():
         translation = tranl_object.translate(text_to_translate, "text", "en", "he")
         print("Translating \"" + text_to_translate + "\": \"" + translation + "\"")
     except Exception as e:
-        print("ERROR while translating: " + str(e))
+        print(traceback.print_exc())
 
 
 main()
