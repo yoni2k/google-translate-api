@@ -87,4 +87,5 @@ def main():
     translation = translate(text_to_translate, "text", "en", "he")
     print("Translating \"" + text_to_translate + "\": \"" + translation + "\"")
 
+
 main()
