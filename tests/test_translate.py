@@ -1,13 +1,19 @@
 import pytest
 from src.translate import GoogleTranslate
 
-def basic_test():
+
+
+def test_translate_string_given():
     tranl_object = GoogleTranslate("../resources/settings.json")
     assert tranl_object.translate("hello", "text", "en", "he") == "שלום"
 
+def test_translate_string_from_file():
+    tranl_object = GoogleTranslate("../resources/settings.json")
+    assert tranl_object.translate(None, "text", "en", "he") == "שלום עולם"
 
-def test_translate():
-    basic_test()
+def test_translate_hebrew_to_english():
+    tranl_object = GoogleTranslate("../resources/settings.json")
+    assert tranl_object.translate("שלום", "text", "he", "en") == "Hello"
 
 """
 src_token_location = '../resources/token.txt'
