@@ -52,9 +52,10 @@ class GoogleTranslate:
     def _send_request(self, text_to_translate, format_type, source, target):
         # TODO write explanation
         querystring = {"q":        text_to_translate,
-                       "format":   format_type,
-                       "source":   source,
-                       "target":   target}
+                       #"format":   format_type,    #optional - seems to be OK without it
+                       #"source":   source,         #optional - seems to be OK without it
+                       "target":   target
+                       }
 
         headers = {'Authorization':    f'Bearer {self.token}',
                    'Host':             "translation.googleapis.com"}
@@ -67,7 +68,7 @@ class GoogleTranslate:
         if resp_json.get('data'):
             return resp_json['data']['translations'][0]['translatedText']
         elif resp_json.get('error'):
-            raise ValueError("ERROR: " + resp_json['error'])
+            raise ValueError("ERROR: " + str(resp_json['error']))
         else:
             raise ValueError('ERROR: unknown parsing error of the response: ' + resp_json)
 
@@ -77,6 +78,8 @@ class GoogleTranslate:
             text_to_translate = self._get_str_to_translate()
         self.last_translated = text_to_translate # for printing / debugging
         response = self._send_request(text_to_translate, format_type, source, target)
+        if not response.ok:
+            response.raise_for_status()
         return self._parse_translate_response(response.json())
 
     def check_all_settings_exist(self):
@@ -84,13 +87,14 @@ class GoogleTranslate:
             self.settings[setting_name]
 
         if not self.settings[self.SettingNames.name_translate_string_source] in self.SettingNames.source_types:
-            raise ValueError("Invalid source type: " + self.SettingNames.string_to_translate_source_type)
+            raise ValueError("Invalid source type: " + self.SettingNames.name_translate_string_source)
 
         if (str(self.settings[self.SettingNames.name_translate_string_source])) == "file":
             self.settings[self.SettingNames.name_string_to_translate_source_file]
 
-    def __init__(self, settings_file_path):
+    def __init__(self, settings_file_path, url = translate_url):
         # TODO write explanation
+        self.translate_url = url
         with open(settings_file_path, "r") as settings_file:
             self.settings = json.load(settings_file)
         self.check_all_settings_exist()
