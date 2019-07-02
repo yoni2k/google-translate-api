@@ -91,9 +91,50 @@ class GoogleTranslate:
 
     def translate_input_from_user(self):
         # TODO add docs
-        text_to_translate = input('Enter word to translate from English to Hebrew: ')
-        translation = self.translate(text_to_translate, "he", "en", "text")
-        print("Translation: \"" + text_to_translate + "\": \"" + translation + "\"")
+        target = ""
+        source = ""
+        text_to_translate = ""
+
+        option, *_ = input(""" 
+Welcome to Google translate API playground by Yoni Krichevsky
+Options:
+1. Translate from English to Hebrew
+2. Translate from Hebrew to English
+3. Translate from any language (auto-detect) to Hebrew
+4. Translate from any language (auto-detect) to English
+5. Exit 
+=====================> Please enter your choice: """).split()
+# TODO decide if to invest time to print supported languages
+
+        if option == "1":
+            print("Chosen: 1. Translate from English to Hebrew")
+            source = "en"
+            target = "he"
+            text_to_translate = input("Enter text to translate: ")
+        elif option == "2":
+            print("Chosen: 2. Translate from Hebrew to English")
+            source = "he"
+            target = "en"
+            text_to_translate = input("Enter text to translate: ")
+        elif option == "3":
+            print("Chosen: 3. Translate from any language (auto-detect) to Hebrew")
+            source = None
+            target = "he"
+            text_to_translate = input("Enter text to translate: ")
+        elif option == "4":
+            print("Chosen: 4. Translate from any language (auto-detect) to English")
+            source = None
+            target = "en"
+            text_to_translate = input("Enter text to translate: ")
+        elif option == "5":
+            print("Chosen: 5. Exit")
+            return
+        else:
+            print("Invalid option: " + option)
+            return
+
+        translation = self.translate(text_to_translate, target, source, "text")
+        print("Translation: \"" + text_to_translate + "\": \"" + translation.encode("utf-8").decode("utf-8") + "\"")
         # TODO not great that on one hand outputs the result, and on the other hand returns it
         return translation
 
