@@ -1,22 +1,27 @@
-"""
-TODO:
-- Go over this API documentation in Google
-- Flexibility in choosing which language to translate from
-- Flexibility in choosing which language to translate to
-- Learning what language it is automatically
-- Go over other close to it APIs in Google
-- Completely redo user input
-- Print debug when really in debug
-- Add requirements file
-- Check how to work with longer tokens
-- Maybe: decide if to invest time to print supported languages
-- Maybe: decide if to invest in encoding to work in windows command line
-- Make a movie out of it
-- Put the movie on Github and send to others
-"""
-
 import requests
 import traceback
+
+"""
+Possible future features:
+- Add feature of printing languages supported for translation using https://translation.googleapis.com/language/translate/v2/languages API
+- Add feature of giving flexibility which language to translate to besides Hebrew and English
+- Support API key in a more user-friendly way: find a way to get a longer term API key, or get it programmatically
+- Make work from Windows command line for Hebrew - encoding issues
+- Maybe: make a demo and put a link on Github
+"""
+
+"""
+Start documentation:
+1. Go to the following link and authorize to get API key for using translation services:
+https://accounts.google.com/o/oauth2/v2/auth?redirect_uri=https%3A%2F%2Fdevelopers.google.com%2Foauthplayground&prompt=consent&response_type=code&client_id=407408718192.apps.googleusercontent.com&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcloud-platform+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcloud-translation&access_type=offline
+2. Press on "Exchange authorization code for tokens"
+3. Copy the Access token into ./resources/token.txt
+The token is good for one hour and needs to be refreshed.
+"""
+
+# Change to True to allow detailed debug
+debug = False
+# debug = True
 
 
 class GoogleTranslate:
@@ -53,7 +58,8 @@ class GoogleTranslate:
         headers = {'Authorization':    f'Bearer {self.token}',
                    'Host':             "translation.googleapis.com"}
 
-        print("DEBUG: querystring: " + str(querystring))
+        if debug:
+            print("DEBUG: querystring: " + str(querystring))
         return requests.request("GET", self.translate_url, headers=headers, params=querystring)
 
     @staticmethod
@@ -83,7 +89,8 @@ class GoogleTranslate:
         response = self._send_request(text_to_translate, target, source, format_type)
         if not response.ok:
             response.raise_for_status()
-        print("DEBUG: response: " + str(response) + str(response.json()))
+        if debug:
+            print("DEBUG: response: " + str(response) + str(response.json()))
         return self._parse_translate_response(response.json())
 
     def __init__(self, token_file_path=token_file_path, url=translate_url):
