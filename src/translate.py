@@ -9,6 +9,8 @@ TODO:
 - Print debug when really in debug
 - Add requirements file
 - Check how to work with longer tokens
+- Maybe: decide if to invest time to print supported languages
+- Maybe: decide if to invest in encoding to work in windows command line
 - Make a movie out of it
 - Put the movie on Github and send to others
 """
@@ -79,9 +81,9 @@ class GoogleTranslate:
         assert text_to_translate is not None
         assert target
         response = self._send_request(text_to_translate, target, source, format_type)
-        print("DEBUG: response: " + str(response) + str(response.json()))
         if not response.ok:
             response.raise_for_status()
+        print("DEBUG: response: " + str(response) + str(response.json()))
         return self._parse_translate_response(response.json())
 
     def __init__(self, token_file_path=token_file_path, url=translate_url):
@@ -90,10 +92,8 @@ class GoogleTranslate:
         self._set_token(token_file_path)
 
     def translate_input_from_user(self):
-        # TODO add docs
-        target = ""
-        source = ""
-        text_to_translate = ""
+        """ Asks user for needs to be done (translate what language to what), get input string from user,
+            perform the translation and prints it to standard output """
 
         option, *_ = input(""" 
 Welcome to Google translate API playground by Yoni Krichevsky
@@ -104,7 +104,6 @@ Options:
 4. Translate from any language (auto-detect) to English
 5. Exit 
 =====================> Please enter your choice: """).split()
-# TODO decide if to invest time to print supported languages
 
         if option == "1":
             print("Chosen: 1. Translate from English to Hebrew")

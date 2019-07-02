@@ -7,31 +7,63 @@ from src.translate import GoogleTranslate
 test_file_path_token = "./test_token.json"
 test_file_input = "./test_input.json"
 
-test_user_input_input_eng = "Hi"
-test_user_input_input_heb = "היי"
-
 """ ====================================
         Test utils
 """
 
 
 @pytest.fixture()
-def input_from_str_he(request):
-    input_from_str(request, "היי")
+def input_from_str_he_explicit(request):
+    input_from_str(request, "2\n" "היי")
 
 
 @pytest.fixture()
-def input_from_str_en(request):
-    input_from_str(request, "Hi")
+def input_from_str_he_implicit(request):
+    input_from_str(request, "4\n" "היי")
+
+
+@pytest.fixture()
+def input_from_str_en_explicit(request):
+    input_from_str(request, "1\nHi")
+
+
+@pytest.fixture()
+def input_from_str_en_implicit(request):
+    input_from_str(request, "3\nHi")
+
+
+@pytest.fixture()
+def input_from_str_exit(request):
+    input_from_str(request, "5")
+
+
+@pytest.fixture()
+def input_from_str_invalid_option1(request):
+    input_from_str(request, "0")
+
+
+@pytest.fixture()
+def input_from_str_invalid_option2(request):
+    input_from_str(request, "1a")
+
+
+@pytest.fixture()
+def input_from_str_long_option_en(request):
+    input_from_str(request, "1 garbage\nHi")
+
+
+@pytest.fixture()
+def input_from_str_long_string_en(request):
+    input_from_str(request, "1\nHello world")
 
 
 def input_from_str(request, user_input):
     orig_stdin = sys.stdin
 
-    with open(test_file_input, 'w') as input_file_to_write:
+    with open(test_file_input, 'w', encoding="utf-8") as input_file_to_write:
         input_file_to_write.write(user_input)
 
-    input_file_to_read = open(test_file_input, "r")
+    input_file_to_read = open(test_file_input, "r", encoding="utf-8")
     sys.stdin = input_file_to_read
 
     def return_stdin():
@@ -161,17 +193,49 @@ def test_translate_string_given():
     assert tranl_object.translate("hello", "he") == "שלום"
 
 
-def test_user_input_eng(input_from_str_en):
+def test_user_input_eng_explicit(input_from_str_en_explicit):
     tranl_object = GoogleTranslate()
-    # input is in variable "test_user_input_input" at the beginning of file
     assert tranl_object.translate_input_from_user() == "היי"
 
 
-@pytest.mark.skip(reason="hebrew reading rom input fails on encoding")
-def test_user_input_heb(input_from_str_he):
+def test_user_input_eng_implicit(input_from_str_en_implicit):
     tranl_object = GoogleTranslate()
-    # input is in variable "test_user_input_input" at the beginning of file
-    assert tranl_object.translate_input_from_user() == "Hi"
+    assert tranl_object.translate_input_from_user() == "היי"
+
+
+def test_user_input_heb_explicit(input_from_str_he_explicit):
+    tranl_object = GoogleTranslate()
+    assert tranl_object.translate_input_from_user() == "Hey"
+
+
+def test_user_input_heb_implicit(input_from_str_he_implicit):
+    tranl_object = GoogleTranslate()
+    assert tranl_object.translate_input_from_user() == "Hey"
+
+
+def test_user_input_exit(input_from_str_exit):
+    tranl_object = GoogleTranslate()
+    assert not tranl_object.translate_input_from_user()
+
+
+def test_user_input_invalid_option1(input_from_str_invalid_option1):
+    tranl_object = GoogleTranslate()
+    assert not tranl_object.translate_input_from_user()
+
+
+def test_user_input_invalid_option2(input_from_str_invalid_option2):
+    tranl_object = GoogleTranslate()
+    assert not tranl_object.translate_input_from_user()
+
+
+def test_user_input_eng_long_option_explicit(input_from_str_long_option_en):
+    tranl_object = GoogleTranslate()
+    assert tranl_object.translate_input_from_user() == "היי"
+
+
+def test_user_input_eng_long_text_explicit(input_from_str_long_string_en):
+    tranl_object = GoogleTranslate()
+    assert tranl_object.translate_input_from_user() == "שלום עולם"
 
 
 """ ====================================
@@ -205,4 +269,4 @@ def test_token_file_multiple_lines(test_file_token):
 def test_invalid_url():
     tranl_object = GoogleTranslate(GoogleTranslate.token_file_path, GoogleTranslate.translate_url + "_")
     with pytest.raises(requests.exceptions.HTTPError, match="404 Client Error: Not Found for url"):
-        tranl_object.translate("Hello", "he", "en", "text")
+        tranl_object.translate("Hello", "he")
