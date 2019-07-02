@@ -1,24 +1,6 @@
 import requests
 import traceback
 
-"""
-Possible future features:
-- Add feature of printing languages supported for translation using https://translation.googleapis.com/language/translate/v2/languages API
-- Add feature of giving flexibility which language to translate to besides Hebrew and English
-- Support API key in a more user-friendly way: find a way to get a longer term API key, or get it programmatically
-- Make work from Windows command line for Hebrew - encoding issues
-- Maybe: make a demo and put a link on Github
-"""
-
-"""
-Start documentation:
-1. Go to the following link and authorize to get API key for using translation services:
-https://accounts.google.com/o/oauth2/v2/auth?redirect_uri=https%3A%2F%2Fdevelopers.google.com%2Foauthplayground&prompt=consent&response_type=code&client_id=407408718192.apps.googleusercontent.com&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcloud-platform+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcloud-translation&access_type=offline
-2. Press on "Exchange authorization code for tokens"
-3. Copy the Access token into ./resources/token.txt
-The token is good for one hour and needs to be refreshed.
-"""
-
 # Change to True to allow detailed debug
 debug = False
 # debug = True
@@ -26,10 +8,8 @@ debug = False
 
 class GoogleTranslate:
     """
-            Translate text from 1 language to another using Google translate API
-            Relies on:
-                - valid not expired Google token in resources/token.txt of any Google account
-                    and scope https://www.googleapis.com/auth/cloud-translation
+        Translate text from 1 language to another using Google translate API
+        See ../README.MD for full documentation
     """
 
     translate_url = "https://translation.googleapis.com/language/translate/v2"
@@ -79,7 +59,7 @@ class GoogleTranslate:
         :param target: language code (ISO-639-1) to translate the text to, for example "en" for English, "he" for Hebrew
         :param source: language code (ISO-639-1) of text given to translate, example: "en" for English, "he" for Hebrew
             If None is given, Google translated API will autodetect the language
-        :param format_type: "text"/"html" - how the translated text should be returned in the Json,
+        :param format_type: "text"/"html" - how the translated text should be returned in the JSON,
             easier to put as text or embed in html.
             If not given, will not be sent to Google translate, and HTML will be chosen by default by Google translate.
         :return: parsed translated text
@@ -94,7 +74,12 @@ class GoogleTranslate:
         return self._parse_translate_response(response.json())
 
     def __init__(self, token_file_path=token_file_path, url=translate_url):
-        """ Init function that reads the token """
+        """
+        Init function that reads the token and can override Google Cloud translate URL
+        :param token_file_path: optional - path of the file with Google API key / token,
+            by default taken from "../resources/token.txt"
+        :param url: optional - Google Cloud Translate URL - was added mostly for testing purposes
+        """
         self.translate_url = url
         self._set_token(token_file_path)
 
@@ -141,7 +126,7 @@ Options:
 
         translation = self.translate(text_to_translate, target, source, "text")
         print("Translation: \"" + text_to_translate + "\": \"" + translation.encode("utf-8").decode("utf-8") + "\"")
-        # TODO not great that on one hand outputs the result, and on the other hand returns it
+        # Both print the result to standard output for user usage, and return it for Unit testing
         return translation
 
 
