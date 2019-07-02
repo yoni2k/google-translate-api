@@ -164,14 +164,14 @@ def test_translate_string_given():
 def test_user_input_eng(input_from_str_en):
     tranl_object = GoogleTranslate()
     # input is in variable "test_user_input_input" at the beginning of file
-    assert tranl_object._tmp_translate_from_user("he") == "היי"
+    assert tranl_object.translate_input_from_user() == "היי"
 
 
 @pytest.mark.skip(reason="hebrew reading rom input fails on encoding")
 def test_user_input_heb(input_from_str_he):
     tranl_object = GoogleTranslate()
     # input is in variable "test_user_input_input" at the beginning of file
-    assert tranl_object._tmp_translate_from_user("en") == "Hi"
+    assert tranl_object.translate_input_from_user() == "Hi"
 
 
 """ ====================================

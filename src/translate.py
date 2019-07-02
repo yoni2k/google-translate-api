@@ -12,7 +12,6 @@ TODO:
 """
 
 import requests
-import json
 import traceback
 
 
@@ -26,16 +25,15 @@ class GoogleTranslate:
 
     translate_url = "https://translation.googleapis.com/language/translate/v2"
     token_file_path = "../resources/token.txt"
-    last_translated = ""
 
-    def _get_token(self, token_file_path):
+    def _set_token(self, token_file_path):
         """ Returns token to be used when connection to Google API """
         with open(token_file_path, "r") as tokenFile:
             file_lines = tokenFile.readlines()
 
         if len(file_lines) > 1:
             raise ValueError('There are more than 1 lines in token file')
-        return file_lines[0].strip('\n')
+        self.token = file_lines[0].strip('\n')
 
     def _send_request(self, text_to_translate, target, source=None, format_type=None):
         """ Sends request to Google translate API after insertion of given parameters """
@@ -69,7 +67,7 @@ class GoogleTranslate:
         Translate text from 1 language to another using Google translate API
         :param text_to_translate: Text to translate to the target language
         :param target: language code (ISO-639-1) to translate the text to, for example "en" for English, "he" for Hebrew
-        :param source: language code (ISO-639-1) of text given to translate, for example "en" for English, "he" for Hebrew
+        :param source: language code (ISO-639-1) of text given to translate, example: "en" for English, "he" for Hebrew
             If None is given, Google translated API will autodetect the language
         :param format_type: "text"/"html" - how the translated text should be returned in the Json,
             easier to put as text or embed in html.
@@ -78,7 +76,6 @@ class GoogleTranslate:
         """
         assert text_to_translate is not None
         assert target
-        self.last_translated = text_to_translate  # for printing / debugging
         response = self._send_request(text_to_translate, target, source, format_type)
         print("response: " + str(response))
         print("response.txt: " + str(response.text))
@@ -86,23 +83,23 @@ class GoogleTranslate:
             response.raise_for_status()
         return self._parse_translate_response(response.json())
 
-    def _tmp_translate_from_user(self, target, source=None, format_type=None):
-        #TODO decide what to do with this fuction, if leaving - rename and add docs
-        text_to_translate = input('Enter word to translate from English to Hebrew: ')
-        return self.translate(text_to_translate, target, source, format_type)
-
     def __init__(self, token_file_path=token_file_path, url=translate_url):
         """ Init function that reads the token """
         self.translate_url = url
-        self.token = self._get_token(token_file_path)
+        self._set_token(token_file_path)
+
+    def translate_input_from_user(self):
+        # TODO add docs
+        text_to_translate = input('Enter word to translate from English to Hebrew: ')
+        translation = self.translate(text_to_translate, "he", "en", "text")
+        print("Translation: \"" + text_to_translate + "\": \"" + translation + "\"")
+        # TODO not great that on one hand outputs the result, and on the other hand returns it
+        return translation
 
 
 def main():
     try:
-        # TODO if there any point in having a constructor, and a separate line?
-        tranl_object = GoogleTranslate()
-        translation = tranl_object._tmp_translate_from_user(None, "he", "en", "text")
-        print("Translation: \"" + tranl_object.last_translated + "\": \"" + translation + "\"")
+        GoogleTranslate().translate_input_from_user()
     except Exception:
         print(traceback.print_exc())
 
