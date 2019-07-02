@@ -6,6 +6,8 @@ TODO:
 - Learning what language it is automatically
 - Go over other close to it APIs in Google
 - Completely redo user input
+- Print debug when really in debug
+- Add requirements file
 - Check how to work with longer tokens
 - Make a movie out of it
 - Put the movie on Github and send to others
@@ -49,7 +51,7 @@ class GoogleTranslate:
         headers = {'Authorization':    f'Bearer {self.token}',
                    'Host':             "translation.googleapis.com"}
 
-        print("querystring: " + str(querystring))
+        print("DEBUG: querystring: " + str(querystring))
         return requests.request("GET", self.translate_url, headers=headers, params=querystring)
 
     @staticmethod
@@ -77,8 +79,7 @@ class GoogleTranslate:
         assert text_to_translate is not None
         assert target
         response = self._send_request(text_to_translate, target, source, format_type)
-        print("response: " + str(response))
-        print("response.txt: " + str(response.text))
+        print("DEBUG: response: " + str(response) + str(response.json()))
         if not response.ok:
             response.raise_for_status()
         return self._parse_translate_response(response.json())
