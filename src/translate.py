@@ -1,12 +1,12 @@
 """
-TODOs:
+TODO:
 - Move to temporary google account
-- Check how to work with longer tokens
 - Go over this API documentation in Google
 - Flexibility in choosing which language to translate from
 - Flexibility in choosing which language to translate to
 - Learning what language it is automatically
 - Go over other close to it APIs in Google
+- Check how to work with longer tokens
 - Make a movie out of it
 - Put the movie on Github and send to others
 """
@@ -17,6 +17,13 @@ import traceback
 
 
 class GoogleTranslate:
+    """
+            Translate text from 1 language to another using Google translate API
+            Relies on:
+                - settings file in resources/settings.json
+                - valid not expired Google token in resources/token.txt of any Google account
+                    and scope https://www.googleapis.com/auth/cloud-translation
+    """
 
     translate_url = "https://translation.googleapis.com/language/translate/v2"
     last_translated = ""
@@ -41,8 +48,7 @@ class GoogleTranslate:
         return file_lines[0].strip('\n')
 
     def _get_str_to_translate(self):
-        """ Returns string that should be translated """
-        # TODO do I need this function at all? Like this?
+        """ Returns string that should be translated, depends on "translate_string_source" setting """
         if self.settings[self.SettingNames.name_translate_string_source] == "user_input":
             return input('Enter word to translate from English to Hebrew: ')
         elif self.settings[self.SettingNames.name_translate_string_source] == "file":
@@ -51,7 +57,7 @@ class GoogleTranslate:
             raise ValueError("Invalid source type: " + self.SettingNames.name_translate_string_source)
 
     def _send_request(self, text_to_translate, format_type, source, target):
-        # TODO write explanation
+        """ Sends request to Google translate API after insertion of given parameters """
         querystring = {"q":        text_to_translate,
                        "format":   format_type,    # optional - seems to be OK without it
                        "source":   source,         # optional - seems to be OK without it
@@ -66,7 +72,7 @@ class GoogleTranslate:
 
     @staticmethod
     def _parse_translate_response(resp_json):
-        # TODO write explanation
+        """ Parses the translated text out of the response received from Google API"""
         if resp_json.get('data'):
             return resp_json['data']['translations'][0]['translatedText']
         elif resp_json.get('error'):
@@ -75,7 +81,19 @@ class GoogleTranslate:
             raise ValueError('ERROR: unknown parsing error of the response: ' + resp_json)
 
     def translate(self, text_to_translate, format_type, source, target):
-        # TODO write explanation
+        """
+        Translate text from 1 language to another using Google translate API
+        :param text_to_translate: Text to translate could be taken from 3 sources:
+            - given in this parameter to translate method, if this parameter is not None
+            - taken from settings file, if "translate_string_source" setting = "file" and this param is None
+            - taken from user input, if "translate_string_source" setting = "user_input" and this param is None
+        :param format_type: "text"/"html" - how the translated text should be returned in the Json,
+            easier to put as text or embed in html
+
+        :param source: 2 letter language code (ISO ) of text given to translate
+        :param target: 2 letter language code (ISO ) to translate the text to
+        :return: parsed translated text
+        """
         if text_to_translate is None:
             text_to_translate = self._get_str_to_translate()
         self.last_translated = text_to_translate  # for printing / debugging
@@ -97,7 +115,7 @@ class GoogleTranslate:
             self.settings[self.SettingNames.name_string_to_translate_source_file]
 
     def __init__(self, settings_file_path, url=translate_url):
-        # TODO write explanation
+        """ Init function that reads and validates the settings and token """
         self.translate_url = url
         with open(settings_file_path, "r") as settings_file:
             self.settings = json.load(settings_file)
