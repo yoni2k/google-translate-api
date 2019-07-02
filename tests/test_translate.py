@@ -62,22 +62,22 @@ def create_test_settings_file(token_file_path, translate_string_source, string_t
 
 def test_success_no_assert():
     tranl_object = GoogleTranslate("../resources/settings.json")
-    tranl_object.translate("hello", "text", "en", "he")
+    tranl_object.translate("hello", "he", "en", "text")
 
 
 def test_translate_string_given():
     tranl_object = GoogleTranslate("../resources/settings.json")
-    assert tranl_object.translate("hello", "text", "en", "he") == "שלום"
+    assert tranl_object.translate("hello", "he", "en", "text") == "שלום"
 
 
 def test_translate_string_from_file():
     tranl_object = GoogleTranslate("../resources/settings.json")
-    assert tranl_object.translate(None, "text", "en", "he") == "שלום עולם"
+    assert tranl_object.translate(None, "he", "en", "text") == "שלום עולם"
 
 
 def test_translate_hebrew_to_english():
     tranl_object = GoogleTranslate("../resources/settings.json")
-    assert tranl_object.translate("שלום", "text", "he", "en") == "Hello"
+    assert tranl_object.translate("שלום", "en", "he", "text") == "Hello"
 
 
 def test_undefined_settings_path():
@@ -106,13 +106,13 @@ def test_missing_string_in_settings(test_file_settings):
 def test_missing_user_input_test_giving_string_no_string_in_file(test_file_settings):
     create_test_settings_file("../resources/token.txt", "user_input", None)
     tranl_object = GoogleTranslate(test_file_path_settings)
-    assert tranl_object.translate("hello", "text", "en", "he") == "שלום"
+    assert tranl_object.translate("hello", "he", "en", "text") == "שלום"
 
 
 def test_missing_user_input_test_giving_string_with_string_in_file(test_file_settings):
     create_test_settings_file("../resources/token.txt", "user_input", "Hi")
     tranl_object = GoogleTranslate(test_file_path_settings)
-    assert tranl_object.translate("hello", "text", "en", "he") == "שלום"
+    assert tranl_object.translate("hello", "he", "en", "text") == "שלום"
 
 
 def test_invalid_token(test_file_token):
@@ -122,7 +122,7 @@ def test_invalid_token(test_file_token):
 
     tranl_object = GoogleTranslate(test_file_path_settings)
     with pytest.raises(requests.exceptions.HTTPError, match=r"401"):
-        tranl_object.translate("Hello", "text", "en", "he")
+        tranl_object.translate("Hello", "he", "en", "text")
 
 
 def test_token_file_multiple_lines(test_file_token, test_file_settings):
@@ -139,38 +139,42 @@ def test_user_input(test_file_settings, input_from_str):
     create_test_settings_file("../resources/token.txt", "user_input", None)
     tranl_object = GoogleTranslate(test_file_path_settings)
     # input is in variable "test_user_input_input" at the beginning of file
-    assert tranl_object.translate(None, "text", "en", "he") == "היי"
+    assert tranl_object.translate(None, "he", "en", "text") == "היי"
 
 
 def test_invalid_url():
     tranl_object = GoogleTranslate("../resources/settings.json", GoogleTranslate.translate_url + "_")
     with pytest.raises(requests.exceptions.HTTPError, match="404 Client Error: Not Found for url"):
-        tranl_object.translate("Hello", "text", "en", "he")
+        tranl_object.translate("Hello", "he", "en", "text")
 
 
 def test_empty_string():
     tranl_object = GoogleTranslate("../resources/settings.json")
-    tranl_object.translate("", "text", "en", "he") == ""
+    tranl_object.translate("", "he", "en", "text") == ""
 
 
 def test_invalid_format():
     tranl_object = GoogleTranslate("../resources/settings.json")
     with pytest.raises(requests.exceptions.HTTPError, match="400 Client Error: Bad Request"):
-        tranl_object.translate("Hello", "invalid_format", "en", "he")
+        tranl_object.translate("Hello", "he", "en", "invalid_format")
 
 
 def test_html_format():
     tranl_object = GoogleTranslate("../resources/settings.json")
-    assert tranl_object.translate("Hello", "html", "en", "he") == "שלום"
+    assert tranl_object.translate("Hello", "he", "en", "html") == "שלום"
 
 
 def test_invalid_source():
     tranl_object = GoogleTranslate("../resources/settings.json")
     with pytest.raises(requests.exceptions.HTTPError, match="400 Client Error: Bad Request"):
-        tranl_object.translate("Hello", "html", "invalid_source", "he")
+        tranl_object.translate("Hello", "he", "invalid_source", "text")
 
 
 def test_invalid_source():
     tranl_object = GoogleTranslate("../resources/settings.json")
     with pytest.raises(requests.exceptions.HTTPError, match="400 Client Error: Bad Request"):
-        tranl_object.translate("Hello", "html", "en", "invalid_target")
+        tranl_object.translate("Hello", "invalid_target", "en", "html")
+
+
+def test_hebrew_auto_detect():
+    pass

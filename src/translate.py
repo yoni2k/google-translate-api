@@ -1,11 +1,11 @@
 """
 TODO:
-- Move to temporary google account
 - Go over this API documentation in Google
 - Flexibility in choosing which language to translate from
 - Flexibility in choosing which language to translate to
 - Learning what language it is automatically
 - Go over other close to it APIs in Google
+- Completely redo user input
 - Check how to work with longer tokens
 - Make a movie out of it
 - Put the movie on Github and send to others
@@ -56,13 +56,16 @@ class GoogleTranslate:
         else:
             raise ValueError("Invalid source type: " + self.SettingNames.name_translate_string_source)
 
-    def _send_request(self, text_to_translate, format_type, source, target):
+    def _send_request(self, text_to_translate, target, source=None, format_type=None):
         """ Sends request to Google translate API after insertion of given parameters """
         querystring = {"q":        text_to_translate,
-                       "format":   format_type,    # optional - seems to be OK without it
-                       "source":   source,         # optional - seems to be OK without it
-                       "target":   target
-                       }
+                       "target":   target}
+
+        if source:
+            querystring["source"] = source
+
+        if format_type:
+            querystring["format"] = format_type
 
         headers = {'Authorization':    f'Bearer {self.token}',
                    'Host':             "translation.googleapis.com"}
@@ -80,24 +83,24 @@ class GoogleTranslate:
         else:
             raise ValueError('ERROR: unknown parsing error of the response: ' + resp_json)
 
-    def translate(self, text_to_translate, format_type, source, target):
+    def translate(self, text_to_translate=None, target=None, source=None, format_type=None):
         """
         Translate text from 1 language to another using Google translate API
         :param text_to_translate: Text to translate could be taken from 3 sources:
             - given in this parameter to translate method, if this parameter is not None
             - taken from settings file, if "translate_string_source" setting = "file" and this param is None
             - taken from user input, if "translate_string_source" setting = "user_input" and this param is None
+        :param target: language code (ISO-639-1) to translate the text to, for example "en" for English, "he" for Hebrew
+        :param source: language code (ISO-639-1) of text given to translate, for example "en" for English, "he" for Hebrew
         :param format_type: "text"/"html" - how the translated text should be returned in the Json,
-            easier to put as text or embed in html
-
-        :param source: 2 letter language code (ISO ) of text given to translate
-        :param target: 2 letter language code (ISO ) to translate the text to
+            easier to put as text or embed in html.
+            If not given, will not be sent to Google translate, and HTML will be chosen by default by Google translate.
         :return: parsed translated text
         """
         if text_to_translate is None:
             text_to_translate = self._get_str_to_translate()
         self.last_translated = text_to_translate  # for printing / debugging
-        response = self._send_request(text_to_translate, format_type, source, target)
+        response = self._send_request(text_to_translate, target, source, format_type)
         print("response: " + str(response))
         print("response.txt: " + str(response.text))
         if not response.ok:
@@ -126,7 +129,7 @@ class GoogleTranslate:
 def main():
     try:
         tranl_object = GoogleTranslate("../resources/settings.json")
-        translation = tranl_object.translate(None, "text", "en", "he")
+        translation = tranl_object.translate(None, "he", "en", "text")
         print("Translation: \"" + tranl_object.last_translated + "\": \"" + translation + "\"")
     except Exception:
         print(traceback.print_exc())
