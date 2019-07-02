@@ -11,6 +11,7 @@ test_file_input = "./test_input.json"
 
 test_user_input_input = "Hi"
 
+
 @pytest.fixture()
 def input_from_str(request):
     orig_stdin = sys.stdin
@@ -107,6 +108,7 @@ def test_missing_user_input_test_giving_string_no_string_in_file(test_file_setti
     tranl_object = GoogleTranslate(test_file_path_settings)
     assert tranl_object.translate("hello", "text", "en", "he") == "שלום"
 
+
 def test_missing_user_input_test_giving_string_with_string_in_file(test_file_settings):
     create_test_settings_file("../resources/token.txt", "user_input", "Hi")
     tranl_object = GoogleTranslate(test_file_path_settings)
@@ -119,8 +121,8 @@ def test_invalid_token(test_file_token):
         token_file.write("InvalidToken")
 
     tranl_object = GoogleTranslate(test_file_path_settings)
-    with pytest.raises(ValueError, match=r"401.*invalid authentication credentials"):
-        tranl_object.translate("Hello", "text", "en", "he") == "שלום"
+    with pytest.raises(requests.exceptions.HTTPError, match=r"401"):
+        tranl_object.translate("Hello", "text", "en", "he")
 
 
 def test_token_file_multiple_lines(test_file_token, test_file_settings):
@@ -144,3 +146,31 @@ def test_invalid_url():
     tranl_object = GoogleTranslate("../resources/settings.json", GoogleTranslate.translate_url + "_")
     with pytest.raises(requests.exceptions.HTTPError, match="404 Client Error: Not Found for url"):
         tranl_object.translate("Hello", "text", "en", "he")
+
+
+def test_empty_string():
+    tranl_object = GoogleTranslate("../resources/settings.json")
+    tranl_object.translate("", "text", "en", "he") == ""
+
+
+def test_invalid_format():
+    tranl_object = GoogleTranslate("../resources/settings.json")
+    with pytest.raises(requests.exceptions.HTTPError, match="400 Client Error: Bad Request"):
+        tranl_object.translate("Hello", "invalid_format", "en", "he")
+
+
+def test_html_format():
+    tranl_object = GoogleTranslate("../resources/settings.json")
+    assert tranl_object.translate("Hello", "html", "en", "he") == "שלום"
+
+
+def test_invalid_source():
+    tranl_object = GoogleTranslate("../resources/settings.json")
+    with pytest.raises(requests.exceptions.HTTPError, match="400 Client Error: Bad Request"):
+        tranl_object.translate("Hello", "html", "invalid_source", "he")
+
+
+def test_invalid_source():
+    tranl_object = GoogleTranslate("../resources/settings.json")
+    with pytest.raises(requests.exceptions.HTTPError, match="400 Client Error: Bad Request"):
+        tranl_object.translate("Hello", "html", "en", "invalid_target")

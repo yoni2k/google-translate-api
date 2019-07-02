@@ -1,12 +1,12 @@
 """
 TODOs:
-- Put in Github
 - Move to temporary google account
 - Check how to work with longer tokens
-- UTs
+- Go over this API documentation in Google
 - Flexibility in choosing which language to translate from
 - Flexibility in choosing which language to translate to
 - Learning what language it is automatically
+- Go over other close to it APIs in Google
 - Make a movie out of it
 - Put the movie on Github and send to others
 """
@@ -19,14 +19,15 @@ import traceback
 class GoogleTranslate:
 
     translate_url = "https://translation.googleapis.com/language/translate/v2"
+    last_translated = ""
 
     class SettingNames:
         name_token_file_path = 'token_file_path'
         name_string_to_translate_source_file = 'string_to_translate_source_file'
         name_translate_string_source = 'translate_string_source'
 
-        mand_settings_list = (  name_token_file_path,
-                                name_translate_string_source)
+        mand_settings_list = (name_token_file_path,
+                              name_translate_string_source)
 
         source_types = ("file", "user_input")
 
@@ -52,14 +53,15 @@ class GoogleTranslate:
     def _send_request(self, text_to_translate, format_type, source, target):
         # TODO write explanation
         querystring = {"q":        text_to_translate,
-                       #"format":   format_type,    #optional - seems to be OK without it
-                       #"source":   source,         #optional - seems to be OK without it
+                       "format":   format_type,    # optional - seems to be OK without it
+                       "source":   source,         # optional - seems to be OK without it
                        "target":   target
                        }
 
         headers = {'Authorization':    f'Bearer {self.token}',
                    'Host':             "translation.googleapis.com"}
 
+        print("querystring: " + str(querystring))
         return requests.request("GET", self.translate_url, headers=headers, params=querystring)
 
     @staticmethod
@@ -74,10 +76,12 @@ class GoogleTranslate:
 
     def translate(self, text_to_translate, format_type, source, target):
         # TODO write explanation
-        if not text_to_translate:
+        if text_to_translate is None:
             text_to_translate = self._get_str_to_translate()
-        self.last_translated = text_to_translate # for printing / debugging
+        self.last_translated = text_to_translate  # for printing / debugging
         response = self._send_request(text_to_translate, format_type, source, target)
+        print("response: " + str(response))
+        print("response.txt: " + str(response.text))
         if not response.ok:
             response.raise_for_status()
         return self._parse_translate_response(response.json())
@@ -92,7 +96,7 @@ class GoogleTranslate:
         if (str(self.settings[self.SettingNames.name_translate_string_source])) == "file":
             self.settings[self.SettingNames.name_string_to_translate_source_file]
 
-    def __init__(self, settings_file_path, url = translate_url):
+    def __init__(self, settings_file_path, url=translate_url):
         # TODO write explanation
         self.translate_url = url
         with open(settings_file_path, "r") as settings_file:
@@ -106,7 +110,7 @@ def main():
         tranl_object = GoogleTranslate("../resources/settings.json")
         translation = tranl_object.translate(None, "text", "en", "he")
         print("Translation: \"" + tranl_object.last_translated + "\": \"" + translation + "\"")
-    except Exception as e:
+    except Exception:
         print(traceback.print_exc())
 
 
