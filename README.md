@@ -7,33 +7,33 @@ Text translation:
 
 # My purpose
 In order to practice the following technical areas:
+ - Using REST APIs
+ - HTTP communication - headers, parameters, authentication etc.
  - Python programming
     - Design of small Python module with multiple ways to be used
-    - Design of testable modules
+    - Design of testable Python class
     - Writing, reading and parsing files
     - JSON parsing and writing
     - Working with `requests` for HTTP communication
-    - Exception handling and throwing
+    - Exception handling and raising
     - User input and parsing 
- - Using REST APIs
- - HTTP communication - headers, parameters, authentication etc.
- - PyTest testing - including fixtures and finalizers, redirecting stdin 
+    - PyTest testing - including fixtures and finalizers, redirecting stdin 
  - Encodings (UTF-8, Windows Character maps)
 
 # How it works
-By calling Google Cloud REST API
+By calling Google Cloud Translate REST API
 `https://translation.googleapis.com/language/translate/v2`
 
 See details here: https://cloud.google.com/translate/docs/reference/rest/v2/translate
 
 # Authentication / security
-In order to call Google Cloud Translate API, need a token / API key.  In order not to commit the keys, and since the token expires every how, see "First time and every hour" setup
+In order to call Google Cloud Translate API, a token / API key is needed based on OAuth 2.0 authentication.  In order not to commit the keys, and since the token expires every hour, see "First time and every hour" setup
 
 # Setup
-## Prerequisites
+## Prerequisites on the machine
 1. Python
 2. Git
-3. _On Windows:_ PyCharm IDE or any program that allows to run python programs with UTF-8 encoding 
+3. _On Windows:_ PyCharm IDE or any program that allows to run python programs with UTF-8 encoding. _On Linux_ should work as is.
 
 ## Setup - first time
 1. Clone this Repository
@@ -43,29 +43,30 @@ In order to call Google Cloud Translate API, need a token / API key.  In order n
 ## Setup - first time and every hour
  - Go to the following link and authorize using one of your Google accounts to get short expiration API key for using translation services:
     https://accounts.google.com/o/oauth2/v2/auth?redirect_uri=https%3A%2F%2Fdevelopers.google.com%2Foauthplayground&prompt=consent&response_type=code&client_id=407408718192.apps.googleusercontent.com&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcloud-platform+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcloud-translation&access_type=offline
- - Press on "Exchange authorization code for tokens"
- - Copy the Access token into `./resources/token.txt`
+ - After confirming a few times, when redirected back to Google Cloud Playground, Press on "Exchange authorization code for tokens"
+ - Copy the Access token from the website into `./resources/token.txt`
 
 The token is good for one hour and needs to be refreshed every hour by following the process above.
 
 # API
-## By calling GoogleTranslate class programmatically
+## By calling GoogleTranslate class of google-translate-api programmatically in Python
 ### GoogleTranslate() constructor
-    GoogleTranslate(token_file_path=token_file_path, url=translate_url)
-    Reads the token and can override Google Cloud translate URL
+    def GoogleTranslate(token_file_path=token_file_path, url=translate_url):
+    """ Reads the token and can override Google Cloud translate URL
     :param token_file_path: optional - path of the file with Google API key / token,
         by default taken from "../resources/token.txt"
-    :param url: optional - Google Cloud Translate URL - was added mostly for testing purposes
+    :param url: optional - Google Cloud Translate URL - was added mostly for testing purposes """
 ### translate() API
-    Translate text from 1 language to another using Google translate API
+    def translate(self, text_to_translate, target, source=None, format_type=None):
+    """ Translate text from 1 language to another using Google translate API
     :param text_to_translate: Text to translate to the target language
     :param target: language code (ISO-639-1) to translate the text to, for example "en" for English, "he" for Hebrew
     :param source: language code (ISO-639-1) of text given to translate, example: "en" for English, "he" for Hebrew
-        If None is given, Google translated API will autodetect the language
+        If None is given, Google translate API will autodetect the language
     :param format_type: "text"/"html" - how the translated text should be returned in the JSON,
         easier to put as text or embed in html.
-        If not given, will not be sent to Google translate, and HTML will be chosen by default by Google translate.
-    :return: parsed translated text
+        If not given, will not be sent to Google translate, and html will be chosen by default by Google translate.
+    :return: parsed translated text """
 
 ### Examples of usage
 #### Basic
@@ -78,7 +79,7 @@ The token is good for one hour and needs to be refreshed every hour by following
  _See known limitations about running it from Windows command line_
  - Run the module:
     `python src/translate.py`
- - Follow the instructions given
+ - Follow the instructions given in Standard Output
  - The translation will be presented on the screen
  
 ### Options: 
@@ -106,16 +107,16 @@ The token is good for one hour and needs to be refreshed every hour by following
 
 # Unit tests
 There are extensive unit tests that test different use cases and variations of using the module with PyTest: 
-1. Programmatic and User input use cases
-2. From English to Hebrew and from Hebrew to English
-3. With giving explicit source language, or let translate to _auto-detect_
-4. Invalid parameters testing
-5. Testing user input with invalid options given
+ - Programmatic and User input use cases
+ - From English to Hebrew and from Hebrew to English translations
+ - With giving explicit source language, or let translate to _auto-detect_
+ - Invalid parameters testing
+ - Testing user input with invalid options given
 See more tests and details in `tests/test_translate.py`
 
 # Possible future features
- - Add feature of printing languages supported for translation using `https://translation.googleapis.com/language/translate/v2/languages` API
+ - Add feature of returning / printing languages supported for translation using `https://translation.googleapis.com/language/translate/v2/languages` API
  - Add feature of giving flexibility which language to translate to besides Hebrew and English
- - Support API key in a more user-friendly way: find a way to get a longer term API key, or get it programmatically
- - Make Windows command line for Hebrew - encoding issues
- - Make a demo and put a link on Github
+ - Support API key in a more user-friendly way: find a way to get a longer term API key, or get it programmatically without user intervention 
+ - Resolve Windows command line encoding issues to allow translation from/to languages that require unicode (Hebrew)
+ - Make a demo of using the module and put a link on Github
