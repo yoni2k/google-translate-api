@@ -58,7 +58,7 @@ class GoogleTranslate:
         :param text_to_translate: Text to translate to the target language
         :param target: language code (ISO-639-1) to translate the text to, for example "en" for English, "he" for Hebrew
         :param source: language code (ISO-639-1) of text given to translate, example: "en" for English, "he" for Hebrew
-            If None is given, Google translated API will autodetect the language
+            If None is given, Google translate API will autodetect the language
         :param format_type: "text"/"html" - how the translated text should be returned in the JSON,
             easier to put as text or embed in html.
             If not given, will not be sent to Google translate, and HTML will be chosen by default by Google translate.
