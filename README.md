@@ -32,8 +32,11 @@ In order to call Google Cloud Translate API, a token / API key is needed based o
 # Setup
 ## Prerequisites on the machine
 1. Python
-2. Git
-3. _On Windows:_ PyCharm IDE or any program that allows to run python programs with UTF-8 encoding if want to overcome the limitation in Limitations below. _On Linux_ should work as is.
+2. Pip (if wasn't installed as part of the Python installation)
+To check if was installed:
+`pip3 --version` or `pip --version`
+3. Git
+4. _On Windows:_ PyCharm IDE or any program that allows to run python programs with UTF-8 encoding if want to overcome the limitation in Limitations below. _On Linux_ should work as is.
 
 ## Setup - first time
 1. Clone this Repository
