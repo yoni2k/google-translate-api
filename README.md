@@ -45,13 +45,16 @@ To check if was installed:
 
 ## Setup - first time and every hour
  See Authentication / Security above.
- - Go to the following link and authorize using one of your Google accounts to get short expiration API key for using translation services:
-    https://accounts.google.com/o/oauth2/v2/auth?redirect_uri=https%3A%2F%2Fdevelopers.google.com%2Foauthplayground&prompt=consent&response_type=code&client_id=407408718192.apps.googleusercontent.com&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcloud-platform+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcloud-translation&access_type=offline
- - After confirming a few times, when redirected back to Google Cloud Playground, Press on "Exchange authorization code for tokens"
- - Copy the Access token from the website into `./resources/token.txt`
-
-The token is good for one hour and needs to be refreshed every hour by following the process above.
-
+Replace this whole file with token / API string authorize using one of your Google accounts
+    to get short expiration API key for using Google translation services by:
+1. In a browser, go to the following link: https://accounts.google.com/o/oauth2/v2/auth?redirect_uri=https%3A%2F%2Fdevelopers.google.com%2Foauthplayground&prompt=consent&response_type=code&client_id=407408718192.apps.googleusercontent.com&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcloud-platform+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcloud-translation&access_type=offline
+2. In the browser, Choose the Google account, [enter password if necessary]
+3. In the browser, press "Allow" to allow for a short-term translation services from this account
+4. In the browser, when redirected back to Google Cloud OAuth 2.0 Playground, Press on "Exchange authorization code for tokens"
+5. In the browser, in Google Cloud OAuth 2.0 Playground, go to "Step 2 Exchange authorization code for tokens"
+6. In the browser, copy "Access token" into `./resources/token.txt` and completely replace the file content with the raw token
+_Note: The token is good for one hour and needs to be refreshed every hour by following the process above._
+ 
 # API
 ## By calling GoogleTranslate class of google-translate-api programmatically in Python
 ### GoogleTranslate() constructor
