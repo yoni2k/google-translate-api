@@ -31,17 +31,17 @@ In order to call Google Cloud Translate API, a token / API key is needed based o
 
 # Setup
 ## Prerequisites on the machine
-1. Python
-2. Pip (if wasn't installed as part of the Python installation)
+1. python (python3)
+2. pip (pip3) (if wasn't installed as part of the Python installation)
 To check if was installed:
-`pip3 --version` or `pip --version`
+`pip3 --version`
 3. Git
 4. _On Windows:_ PyCharm IDE or any program that allows to run python programs with UTF-8 encoding if want to overcome the limitation in Limitations below. _On Linux_ should work as is.
 
 ## Setup - first time
 1. Clone this Repository
 2. From the local directory of the repository, run:
-    `pip install -r "requirements.txt"` or `pip3 install -r "requirements.txt"`
+    `pip3 install -r "requirements.txt"`
 
 ## Setup - first time and every hour
  See Authentication / Security above.
@@ -85,7 +85,7 @@ _Note: The token is good for one hour and needs to be refreshed every hour by fo
 ## By user input
  _See known limitations about running it from Windows command line_
  - Run the module:
-    `python src/translate.py`
+    `python3 src/translate.py`
  - Follow the instructions given in Standard Output
  - The translation will be presented on the screen
  
@@ -113,6 +113,7 @@ _Note: The token is good for one hour and needs to be refreshed every hour by fo
 1. Due to encoding issues in Windows, doesn't work well with languages that require unicode encoding (like Hebrew).  Works well when ran from PyCharm, or with languages that don't require unicode. See list of possible future features below.
 
 # Unit tests
+## Coverage
 There are extensive unit tests that test different use cases and variations of using the module with PyTest: 
  - Programmatic and User input use cases
  - From English to Hebrew and from Hebrew to English translations
@@ -120,6 +121,12 @@ There are extensive unit tests that test different use cases and variations of u
  - Invalid parameters testing
  - Testing user input with invalid options given
 See more tests and details in `tests/test_translate.py`
+
+## How to run
+1. Set PYTHONPATH with the main directory of the project:
+Example on Ubunty where project directory is `/home/ubuntu/google-tranlate-api`: `export PYTHONPATH="/home/ubuntu/google-translate-api"`
+Go into tests directory `tests`
+`python3 -m pytest ./tests/test_translate.py`
 
 # Possible future features
  - Add feature of returning / printing languages supported for translation using `https://translation.googleapis.com/language/translate/v2/languages` API
