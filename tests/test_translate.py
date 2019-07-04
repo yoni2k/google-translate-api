@@ -2,7 +2,7 @@ import pytest
 import os
 import sys
 import requests
-from src.translate import GoogleTranslate
+from ..src.translate import GoogleTranslate
 
 test_file_path_token = "./test_token.json"
 test_file_input = "./test_input.json"
