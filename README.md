@@ -124,9 +124,10 @@ See more tests and details in `tests/test_translate.py`
 
 ## How to run
 1. Set PYTHONPATH with the main directory of the project:
-Example on Ubunty where project directory is `/home/ubuntu/google-tranlate-api`: `export PYTHONPATH="/home/ubuntu/google-translate-api"`
-Go into tests directory `tests`
-`python3 -m pytest ./tests/test_translate.py`
+   Example on Ubunty where project directory is `/home/ubuntu/google-tranlate-api`: `export PYTHONPATH="/home/ubuntu/google-translate-api"`
+2. Go into tests directory `tests`
+3. Run the tests with PyTest: 
+   `python3 -m pytest ./test_translate.py`
 
 # Possible future features
  - Add feature of returning / printing languages supported for translation using `https://translation.googleapis.com/language/translate/v2/languages` API
