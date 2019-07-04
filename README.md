@@ -41,7 +41,7 @@ To check if was installed:
 ## Setup - first time
 1. Clone this Repository
 2. From the local directory of the repository, run:
-    `pip install -r "requirements.txt"`
+    `pip install -r "requirements.txt"` or `pip3 install -r "requirements.txt"`
 
 ## Setup - first time and every hour
  - Go to the following link and authorize using one of your Google accounts to get short expiration API key for using translation services:
