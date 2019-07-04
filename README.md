@@ -44,6 +44,7 @@ To check if was installed:
     `pip install -r "requirements.txt"` or `pip3 install -r "requirements.txt"`
 
 ## Setup - first time and every hour
+ See Authentication / Security above.
  - Go to the following link and authorize using one of your Google accounts to get short expiration API key for using translation services:
     https://accounts.google.com/o/oauth2/v2/auth?redirect_uri=https%3A%2F%2Fdevelopers.google.com%2Foauthplayground&prompt=consent&response_type=code&client_id=407408718192.apps.googleusercontent.com&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcloud-platform+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcloud-translation&access_type=offline
  - After confirming a few times, when redirected back to Google Cloud Playground, Press on "Exchange authorization code for tokens"
