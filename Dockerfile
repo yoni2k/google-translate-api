@@ -12,6 +12,5 @@ RUN pip3 install -r "requirements.txt"
 
 EXPOSE 8080
 
-# ENTRYPOINT "python3" "./src/translate.py"
-ENTRYPOINT "python3"
-CMD ["./src/translate.py"]
+# CMD ["python3","-u","./translate.py"] - must be done from within 'src' directory
+
