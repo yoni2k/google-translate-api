@@ -84,8 +84,9 @@ _Note: The token is good for one hour and needs to be refreshed every hour by fo
 
 ## By user input
  _See known limitations about running it from Windows command line_
+ - Go into src directory `src`
  - Run the module:
-    `python3 src/translate.py`
+    `python3 ./translate.py`
  - Follow the instructions given in Standard Output
  - The translation will be presented on the screen
  
